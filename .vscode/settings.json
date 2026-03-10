@@ -1,0 +1,27 @@
+{
+  "github.copilot.chat.mcp.enabled": true,
+  "github.copilot.chat.agents.enabled": true,
+  "github.copilot.chat.mcp.servers": {
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_TOKEN}"
+      }
+    },
+    "azure-devops": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-azure-devops"
+      ],
+      "env": {
+        "AZURE_DEVOPS_PAT": "${env:AZURE_DEVOPS_TOKEN}",
+        "AZURE_DEVOPS_ORG_URL": "${env:AZURE_DEVOPS_ORG_URL}"
+      }
+    }
+  }
+}

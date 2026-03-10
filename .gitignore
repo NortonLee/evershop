@@ -14,7 +14,8 @@ dist
 /themes
 .idea/*
 .evershop
-.vscode
+.vscode/*
+!.vscode/settings.json
 npm-debug.log
 /package-log.json
 /media

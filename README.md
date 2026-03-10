@@ -42,6 +42,25 @@ For the full installation guide, please refer to our [Installation guide](https:
 
 - [Theme development](https://evershop.io/docs/development/theme/theme-overview).
 
+## 🤖 AI Development Agents
+
+This project includes 7 specialized AI agents to accelerate development with GitHub Copilot:
+
+- 🎯 **[evershop-orchestrator]** - Task analysis and agent recommendations (start here!)
+- 🛍️ **[evershop-feature]** - E-commerce feature development
+- 🐛 **[evershop-debug]** - Debugging and troubleshooting
+- 🎨 **[evershop-theme]** - Theme and UI customization
+- 🔌 **[evershop-extension]** - Extension development
+- 💾 **[evershop-database]** - Database operations
+- 🔧 **[evershop-api]** - GraphQL API development
+
+**Quick Start:**
+```
+@evershop-orchestrator I want to add a wishlist feature
+```
+
+📖 See [QUICKSTART.md](./QUICKSTART.md) and [ORCHESTRATOR_GUIDE.md](./ORCHESTRATOR_GUIDE.md) for details.
+
 
 ## Demo
 
