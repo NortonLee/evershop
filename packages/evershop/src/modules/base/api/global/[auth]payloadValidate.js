@@ -1,3 +1,4 @@
+import AppError from '../../../../lib/error/AppError.js';
 import { INVALID_PAYLOAD } from '../../../../lib/util/httpStatus.js';
 import { getAjv } from '../../services/getAjv.js';
 import markSkipEscape from '../../services/markSkipEscape.js';
@@ -34,13 +35,9 @@ export default (request, response, next) => {
     if (valid) {
       next();
     } else {
-      response.status(INVALID_PAYLOAD);
-      response.json({
-        error: {
-          status: INVALID_PAYLOAD,
-          message: validate.errors[0].message
-        }
-      });
+      // Delegate to the centralised error handler so the response format
+      // is always consistent and the requestId is automatically included.
+      next(AppError.badRequest(validate.errors[0].message));
     }
   }
 };
