@@ -1,4 +1,3 @@
-import { select } from '@evershop/postgres-query-builder';
 import dayjs from 'dayjs';
 import { pool } from '../../../../lib/postgres/connection.js';
 
@@ -38,16 +37,19 @@ export default async (request, response) => {
 
   const results = await Promise.all(
     slots.map(async (slot) => {
-      const query = select();
-      query
-        .from('order')
-        .select('COUNT(order_id)', 'count')
-        .where('created_at', '>=', slot.from)
-        .and('created_at', '<=', slot.to);
-      query.limit(0, 1);
-      const queryResult = await query.execute(pool);
+      const queryResult = await pool.query(
+        `SELECT
+           COUNT(order_id) AS count,
+           COALESCE(SUM(grand_total), 0) AS revenue
+         FROM "order"
+         WHERE created_at >= $1
+           AND created_at <= $2`,
+        [slot.from, slot.to]
+      );
+      const row = queryResult.rows[0];
       return {
-        count: parseInt(queryResult[0].count, 10) || 0,
+        count: parseInt(row.count, 10) || 0,
+        revenue: parseFloat(row.revenue) || 0,
         time: slot.time
       };
     })
