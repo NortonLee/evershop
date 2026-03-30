@@ -4,7 +4,8 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import pathToRegexp from 'path-to-regexp';
 import { translate } from '../../lib/locale/translate/translate.js';
-import { debug, warning } from '../../lib/log/logger.js';
+import { debug, httpLog, warning } from '../../lib/log/logger.js';
+import requestIdMiddleware from '../../lib/middleware/requestId.js';
 import publicStatic from '../../lib/middlewares/publicStatic.js';
 import themePublicStatic from '../../lib/middlewares/themePublicStatic.js';
 import { pool } from '../../lib/postgres/connection.js';
@@ -19,24 +20,47 @@ import { setPageMetaInfo } from '../../modules/cms/services/pageMetaInfo.js';
 import { getDevMiddleware, getHotMiddleware } from './devEnvHelper.js';
 
 export function addDefaultMiddlewareFuncs(app) {
+  // ── 1. Request ID ──────────────────────────────────────────────────────────
+  // Must be first so every subsequent middleware has access to requestId.
+  app.use(requestIdMiddleware);
+
+  // ── 2. Debug middleware timing + structured HTTP log ───────────────────────
   app.use((request, response, next) => {
+    const startTime = Date.now();
     response.debugMiddlewares = [];
     next();
     response.on('finish', () => {
-      // Console log the debug middlewares
-      let message = `[${request.method}] ${request.originalUrl}\n`;
-      response.debugMiddlewares.forEach((m) => {
-        message += m.time
-          ? `-> Middleware ${m.id} - ${m.time} ms\n`
-          : `-> Middleware ${m.id}\n`;
-      });
-      // Skip logging if the request is for static files
+      // Skip verbose logging for static asset requests
       if (
         request.currentRoute?.id === 'staticAsset' ||
         request.currentRoute?.id === 'adminStaticAsset'
       ) {
         return;
       }
+
+      // ── Structured HTTP access log ────────────────────────────────────────
+      const duration = Date.now() - startTime;
+      const userId =
+        request.locals?.user?.admin_user_id ||
+        request.locals?.customer?.customer_id ||
+        null;
+
+      httpLog({
+        requestId: request.locals?.requestId ?? null,
+        method: request.method,
+        url: request.originalUrl,
+        statusCode: response.statusCode,
+        duration,
+        userId
+      });
+
+      // ── Debug middleware timing log (developer-facing) ────────────────────
+      let message = `[${request.method}] ${request.originalUrl}\n`;
+      response.debugMiddlewares.forEach((m) => {
+        message += m.time
+          ? `-> Middleware ${m.id} - ${m.time} ms\n`
+          : `-> Middleware ${m.id}\n`;
+      });
       debug(message);
     });
   });

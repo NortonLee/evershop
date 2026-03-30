@@ -36,6 +36,26 @@ export function success(message) {
   logger.info(message);
 }
 
+/**
+ * Log a structured HTTP request entry at the `http` level.
+ *
+ * @param {{
+ *   requestId: string,
+ *   method:    string,
+ *   url:       string,
+ *   statusCode: number,
+ *   duration:  number,
+ *   userId:    string|number|null
+ * }} meta
+ */
+export function httpLog(meta) {
+  const logger = createLogger();
+  // Serialise the metadata object as a JSON string so it is
+  // always human-readable regardless of the Winston format in use.
+  const message = JSON.stringify(meta);
+  logger.http(message);
+}
+
 addProcessor(
   'logger',
   () => {
