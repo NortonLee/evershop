@@ -1,0 +1,71 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
+    "status": {
+      "type": ["boolean", "integer"],
+      "enum": [true, false, 0, 1]
+    },
+    "type": {
+      "type": "string",
+      "enum": ["spend_and_save", "bogo", "limited_time"]
+    },
+    "discount_type": {
+      "type": "string",
+      "enum": ["percentage", "fixed"]
+    },
+    "discount_amount": {
+      "type": "number",
+      "minimum": 0
+    },
+    "min_purchase_amount": {
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "target_products": {
+      "type": ["array", "null"]
+    },
+    "buy_qty": {
+      "type": ["integer", "null"],
+      "minimum": 1
+    },
+    "get_qty": {
+      "type": ["integer", "null"],
+      "minimum": 1
+    },
+    "get_discount": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 100
+    },
+    "max_discount_amount": {
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "stackable_with_coupons": {
+      "type": ["boolean", "integer"],
+      "enum": [true, false, 0, 1]
+    },
+    "stackable_with_promotions": {
+      "type": ["boolean", "integer"],
+      "enum": [true, false, 0, 1]
+    },
+    "start_date": {
+      "type": ["string", "null"]
+    },
+    "end_date": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

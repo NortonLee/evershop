@@ -60,6 +60,15 @@ export default {
     },
     editUrl: ({ uuid }) => buildUrl('couponEdit', { id: uuid }),
     updateApi: (coupon) => buildUrl('updateCoupon', { id: coupon.uuid }),
-    deleteApi: (coupon) => buildUrl('deleteCoupon', { id: coupon.uuid })
+    deleteApi: (coupon) => buildUrl('deleteCoupon', { id: coupon.uuid }),
+    stackable: ({ stackable }) => (stackable ? 1 : 0),
+    maxUsesPerOrder: ({ maxUsesPerOrder }) =>
+      maxUsesPerOrder !== null && maxUsesPerOrder !== undefined
+        ? parseInt(maxUsesPerOrder, 10)
+        : null,
+    minOrderAmount: ({ minOrderAmount }) =>
+      minOrderAmount !== null && minOrderAmount !== undefined
+        ? parseFloat(minOrderAmount)
+        : null
   }
 };

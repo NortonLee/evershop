@@ -413,6 +413,46 @@ export function registerDefaultValidators() {
         return false;
       }
       return true;
+    },
+    /**
+     * Validates min_order_amount for the coupon.
+     * If the coupon has a min_order_amount, the cart sub_total must be >= that amount.
+     */
+    function minOrderAmountValidator(cart, coupon) {
+      const minOrderAmount =
+        coupon.min_order_amount !== null &&
+        coupon.min_order_amount !== undefined
+          ? parseFloat(coupon.min_order_amount)
+          : null;
+      if (minOrderAmount === null || Number.isNaN(minOrderAmount)) {
+        return true;
+      }
+      const subTotal = parseFloat(cart.getData('sub_total') || 0);
+      return subTotal >= minOrderAmount;
+    },
+    /**
+     * Validates coupon stacking rules.
+     * If the cart already has a coupon applied and the new coupon is not stackable, reject it.
+     */
+    async function stackingValidator(cart, coupon) {
+      const existingCoupon = cart.getData('coupon');
+      // If there's no existing coupon or the existing coupon IS this coupon, pass
+      if (!existingCoupon || existingCoupon === coupon.coupon) {
+        return true;
+      }
+      // Cart already has a different coupon; check stackable field
+      if (!coupon.stackable) {
+        return false;
+      }
+      // Also check the existing coupon's stackable status
+      const existingCouponData = await select()
+        .from('coupon')
+        .where('coupon', '=', existingCoupon)
+        .load(pool);
+      if (existingCouponData && !existingCouponData.stackable) {
+        return false;
+      }
+      return true;
     }
   ];
 }

@@ -19,6 +19,9 @@ type Coupon {
   maxUsesTimePerCustomer: Int
   startDate: DateTime
   endDate: DateTime
+  stackable: Int
+  maxUsesPerOrder: Int
+  minOrderAmount: Float
   editUrl: String!
   updateApi: String!
   deleteApi: String!

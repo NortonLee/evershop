@@ -1,0 +1,78 @@
+"""
+Represents an automatic promotion
+"""
+type Promotion {
+  promotionId: Int
+  uuid: String!
+  name: String!
+  description: String
+  status: Int!
+  type: String!
+  discountType: String!
+  discountAmount: Float!
+  minPurchaseAmount: Float
+  targetProducts: JSON
+  buyQty: Int
+  getQty: Int
+  getDiscount: Float
+  maxDiscountAmount: Float
+  priority: Int!
+  stackableWithCoupons: Int!
+  stackableWithPromotions: Int!
+  startDate: DateTime
+  endDate: DateTime
+  editUrl: String!
+  updateApi: String!
+  deleteApi: String!
+}
+
+"""
+Returns a collection of promotions
+"""
+type PromotionCollection {
+  items: [Promotion]
+  currentPage: Int!
+  total: Int!
+  currentFilters: [Filter]
+}
+
+"""
+Represents a conflict between promotions or between a promotion and a coupon
+"""
+type PromotionConflict {
+  type: String!
+  message: String!
+  promotionIds: [Int]
+}
+
+extend type Query {
+  promotion(id: Int): Promotion
+  promotions(filters: [FilterInput]): PromotionCollection
+  promotionConflicts: [PromotionConflict]
+}
+
+extend type Mutation {
+  createPromotion(input: PromotionInput!): Promotion
+  updatePromotion(id: Int!, input: PromotionInput!): Promotion
+  deletePromotion(id: Int!): Boolean
+}
+
+input PromotionInput {
+  name: String!
+  description: String
+  status: Int!
+  type: String!
+  discountType: String!
+  discountAmount: Float!
+  minPurchaseAmount: Float
+  targetProducts: JSON
+  buyQty: Int
+  getQty: Int
+  getDiscount: Float
+  maxDiscountAmount: Float
+  priority: Int
+  stackableWithCoupons: Int
+  stackableWithPromotions: Int
+  startDate: String
+  endDate: String
+}
