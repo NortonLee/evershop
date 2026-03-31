@@ -64,6 +64,19 @@ export function AddressSummary({ address }) {
           },
           sortOrder: 60,
           id: 'telephone'
+        },
+        {
+          component: {
+            default: ({ wechat }) =>
+              wechat ? (
+                <div className="wechat">WeChat: {wechat}</div>
+              ) : null
+          },
+          props: {
+            wechat: address.wechat
+          },
+          sortOrder: 70,
+          id: 'wechat'
         }
       ]}
     />

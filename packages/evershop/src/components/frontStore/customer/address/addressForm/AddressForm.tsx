@@ -58,6 +58,19 @@ export function CustomerAddressForm({
           component: {
             default: (
               <InputField
+                name={getFieldName('wechat')}
+                label={_('WeChat Number')}
+                placeholder={_('WeChat Number')}
+                defaultValue={address?.wechat || ''}
+              />
+            )
+          },
+          sortOrder: 15
+        },
+        {
+          component: {
+            default: (
+              <InputField
                 name={getFieldName('address_1')}
                 label={_('Address')}
                 placeholder={_('Address')}
