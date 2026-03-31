@@ -2,6 +2,7 @@ export interface CustomerAddressGraphql {
   uuid?: string;
   fullName?: string | null;
   telephone?: string | null;
+  wechat?: string | null;
   address1?: string | null;
   address2?: string | null;
   city?: string | null;
@@ -26,5 +27,6 @@ export interface Address {
   country?: string | null;
   postcode?: string | null;
   telephone?: string | number | null;
+  wechat?: string | null;
   [key: string]: any;
 }
