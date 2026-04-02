@@ -13,10 +13,12 @@ import {
   useCheckoutDispatch
 } from '@components/frontStore/checkout/CheckoutContext.js';
 import { ShippingMethods } from '@components/frontStore/checkout/shipment/ShippingMethods.js';
+import { useCustomer, ExtendedCustomerAddress } from '@components/frontStore/customer/CustomerContext.js';
 import CustomerAddressForm from '@components/frontStore/customer/address/addressForm/Index.js';
+import { SavedAddressSelector } from '@components/frontStore/customer/address/SavedAddressSelector.js';
 import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { MapPin } from 'lucide-react';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
@@ -43,6 +45,13 @@ export function Shipment() {
   } = useCartDispatch();
   const { form } = useCheckout();
   const { updateCheckoutData } = useCheckoutDispatch();
+  const { customer } = useCustomer();
+  const [selectedSavedAddressUuid, setSelectedSavedAddressUuid] = useState<
+    string | undefined
+  >(undefined);
+
+  const savedAddresses: ExtendedCustomerAddress[] =
+    customer?.addresses ?? [];
 
   // Use useWatch for better performance and cleaner code
   const watchedShippingAddress = useWatch({
@@ -125,6 +134,53 @@ export function Shipment() {
     };
   }, [watchedShippingAddress, dirtyFields.shippingAddress]); // Clean dependency array
 
+  const handleSavedAddressSelect = (
+    addr: ExtendedCustomerAddress | null
+  ) => {
+    if (addr === null) {
+      // "Enter new address" selected — clear fields and unset selected
+      setSelectedSavedAddressUuid(undefined);
+      form.setValue('shippingAddress.full_name', '');
+      form.setValue('shippingAddress.telephone', '');
+      form.setValue('shippingAddress.address_1', '');
+      form.setValue('shippingAddress.address_2', '');
+      form.setValue('shippingAddress.city', '');
+      form.setValue('shippingAddress.province', '');
+      form.setValue('shippingAddress.country', '');
+      form.setValue('shippingAddress.postcode', '');
+    } else {
+      setSelectedSavedAddressUuid(addr.uuid);
+      form.setValue('shippingAddress.full_name', addr.fullName ?? '', {
+        shouldDirty: true
+      });
+      form.setValue('shippingAddress.telephone', addr.telephone ?? '', {
+        shouldDirty: true
+      });
+      form.setValue('shippingAddress.address_1', addr.address1 ?? '', {
+        shouldDirty: true
+      });
+      form.setValue('shippingAddress.address_2', addr.address2 ?? '', {
+        shouldDirty: true
+      });
+      form.setValue('shippingAddress.city', addr.city ?? '', {
+        shouldDirty: true
+      });
+      form.setValue(
+        'shippingAddress.province',
+        addr.province?.code ?? '',
+        { shouldDirty: true }
+      );
+      form.setValue(
+        'shippingAddress.country',
+        addr.country?.code ?? '',
+        { shouldDirty: true }
+      );
+      form.setValue('shippingAddress.postcode', addr.postcode ?? '', {
+        shouldDirty: true
+      });
+    }
+  };
+
   const updateShipment = async (method: { code: string; name: string }) => {
     try {
       const validate = await form.trigger('shippingAddress');
@@ -157,6 +213,13 @@ export function Shipment() {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          {savedAddresses.length > 0 && (
+            <SavedAddressSelector
+              addresses={savedAddresses}
+              onSelect={handleSavedAddressSelect}
+              selectedAddressUuid={selectedSavedAddressUuid}
+            />
+          )}
           <CustomerAddressForm
             areaId="checkoutShippingAddressForm"
             fieldNamePrefix="shippingAddress"
