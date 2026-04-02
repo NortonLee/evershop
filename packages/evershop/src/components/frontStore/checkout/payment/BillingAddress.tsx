@@ -14,7 +14,9 @@ import {
   useCheckout,
   useCheckoutDispatch
 } from '@components/frontStore/checkout/CheckoutContext.js';
+import { useCustomer, ExtendedCustomerAddress } from '@components/frontStore/customer/CustomerContext.js';
 import CustomerAddressForm from '@components/frontStore/customer/address/addressForm/Index.js';
+import { SavedAddressSelector } from '@components/frontStore/customer/address/SavedAddressSelector.js';
 import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import {
   Address,
@@ -36,12 +38,64 @@ export function BillingAddress({
 }) {
   const { form, checkoutData } = useCheckout();
   const { updateCheckoutData } = useCheckoutDispatch();
+  const { customer } = useCustomer();
   const {
     setValue,
     getValues,
     trigger,
     formState: { disabled }
   } = form;
+
+  const savedAddresses: ExtendedCustomerAddress[] =
+    customer?.addresses ?? [];
+  const [selectedSavedBillingAddressUuid, setSelectedSavedBillingAddressUuid] =
+    useState<string | undefined>(undefined);
+
+  const handleSavedBillingAddressSelect = (
+    addr: ExtendedCustomerAddress | null
+  ) => {
+    if (addr === null) {
+      setSelectedSavedBillingAddressUuid(undefined);
+      form.setValue('billingAddress.full_name', '');
+      form.setValue('billingAddress.telephone', '');
+      form.setValue('billingAddress.address_1', '');
+      form.setValue('billingAddress.address_2', '');
+      form.setValue('billingAddress.city', '');
+      form.setValue('billingAddress.province', '');
+      form.setValue('billingAddress.country', '');
+      form.setValue('billingAddress.postcode', '');
+    } else {
+      setSelectedSavedBillingAddressUuid(addr.uuid);
+      form.setValue('billingAddress.full_name', addr.fullName ?? '', {
+        shouldDirty: true
+      });
+      form.setValue('billingAddress.telephone', addr.telephone ?? '', {
+        shouldDirty: true
+      });
+      form.setValue('billingAddress.address_1', addr.address1 ?? '', {
+        shouldDirty: true
+      });
+      form.setValue('billingAddress.address_2', addr.address2 ?? '', {
+        shouldDirty: true
+      });
+      form.setValue('billingAddress.city', addr.city ?? '', {
+        shouldDirty: true
+      });
+      form.setValue(
+        'billingAddress.province',
+        addr.province?.code ?? '',
+        { shouldDirty: true }
+      );
+      form.setValue(
+        'billingAddress.country',
+        addr.country?.code ?? '',
+        { shouldDirty: true }
+      );
+      form.setValue('billingAddress.postcode', addr.postcode ?? '', {
+        shouldDirty: true
+      });
+    }
+  };
 
   const shippingAddress = useWatch({
     control: form.control,
@@ -134,6 +188,15 @@ export function BillingAddress({
                     {!useSameAddress && (
                       <ItemDescription className="text-inherit mt-3 overflow-visible">
                         <div className="text-inherit bg-white">
+                          {savedAddresses.length > 0 && (
+                            <SavedAddressSelector
+                              addresses={savedAddresses}
+                              onSelect={handleSavedBillingAddressSelect}
+                              selectedAddressUuid={
+                                selectedSavedBillingAddressUuid
+                              }
+                            />
+                          )}
                           <CustomerAddressForm
                             areaId="checkoutBillingAddressForm"
                             fieldNamePrefix="billingAddress"
@@ -157,6 +220,13 @@ export function BillingAddress({
             ) : (
               <ItemDescription className="text-inherit mt-3 overflow-visible">
                 <div className="text-inherit bg-white">
+                  {savedAddresses.length > 0 && (
+                    <SavedAddressSelector
+                      addresses={savedAddresses}
+                      onSelect={handleSavedBillingAddressSelect}
+                      selectedAddressUuid={selectedSavedBillingAddressUuid}
+                    />
+                  )}
                   <CustomerAddressForm
                     areaId="checkoutBillingAddressForm"
                     fieldNamePrefix="billingAddress"
