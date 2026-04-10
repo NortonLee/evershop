@@ -1,0 +1,5 @@
+{
+  "methods": ["PUT"],
+  "path": "/promotions/:id",
+  "access": "private"
+}

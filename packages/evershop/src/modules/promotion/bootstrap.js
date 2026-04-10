@@ -7,6 +7,7 @@ import { registerCartPromotionFields } from './services/registerCartPromotionFie
 import { registerDefaultCalculators } from './services/registerDefaultCalculators.js';
 import { registerDefaultCouponCollectionFilters } from './services/registerDefaultCouponCollectionFilters.js';
 import { registerDefaultValidators } from './services/registerDefaultValidators.js';
+import { registerPromotionCartFields } from './services/registerPromotionCartFields.js';
 
 export default () => {
   addProcessor(
@@ -24,6 +25,9 @@ export default () => {
   addProcessor('cartItemFields', registerCartItemPromotionFields, 11);
   addProcessor('couponValidatorFunctions', registerDefaultValidators);
   addProcessor('discountCalculatorFunctions', registerDefaultCalculators);
+
+  // Register automatic promotion cart fields (runs after coupon discount)
+  addProcessor('cartFields', registerPromotionCartFields, 5);
 
   // Reigtering the default filters for attribute collection
   addProcessor(
